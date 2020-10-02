@@ -62,14 +62,18 @@ export const app = new Vue({
 
   computed: {
     meetup() {
-      this.rawMeetup.cover = this.rawMeetup.imageId ? getMeetupCoverLink(this.rawMeetup) : undefined;
-      this.rawMeetup.localDate = new Date(this.rawMeetup.date).toLocaleString(navigator.language, {
+      let cover = this.rawMeetup.imageId ? getMeetupCoverLink(this.rawMeetup) : undefined;
+      let localDate = new Date(this.rawMeetup.date).toLocaleString(navigator.language, {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
       });
-      this.rawMeetup.ISOdate = this.rawMeetup.date ? new Date(this.rawMeetup.date).toISOString().substr(0, 10) : undefined;
-      return this.rawMeetup;
+      let ISOdate = this.rawMeetup.date ? new Date(this.rawMeetup.date).toISOString().substr(0, 10) : undefined;
+      return {
+        cover,
+        localDate,
+        ISOdate
+      };
     },
   },
 
@@ -80,7 +84,6 @@ export const app = new Vue({
       let rawMeetup = await fetch(`${API_URL}/meetups/${MEETUP_ID}`);
       if (rawMeetup.ok) {
         let json = await rawMeetup.json();
-        console.log(json);
         this.rawMeetup = json;
       } else {
         alert("Ошибка HTTP: " + rawMeetup.status);
