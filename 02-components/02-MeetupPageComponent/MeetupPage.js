@@ -18,12 +18,12 @@ export const MeetupPage = {
     return {
       meetup: {
         agenda: [],
-        date: null,
+        date: 0,
         description: null,
         id: null,
         imageId: null,
-        organizer: null,
-        place: null,
+        organizer: '',
+        place: '',
         title: null
       }
     }

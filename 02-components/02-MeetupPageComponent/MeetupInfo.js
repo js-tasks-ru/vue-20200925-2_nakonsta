@@ -2,11 +2,11 @@ export const MeetupInfo = {
   template: `<ul class="info-list">
       <li>
         <img class="icon info-list__icon" alt="icon" src="/assets/icons/icon-user.svg" />
-        {{ meetup.organizer }}
+        {{ organizer }}
       </li>
       <li>
         <img class="icon info-list__icon" alt="icon" src="/assets/icons/icon-map.svg" />
-        {{ meetup.place }}
+        {{ place }}
       </li>
       <li>
         <img class="icon info-list__icon" alt="icon" src="/assets/icons/icon-cal-lg.svg" />
@@ -16,8 +16,16 @@ export const MeetupInfo = {
 
   // props
   props: {
-    meetup: {
-      type: Object,
+    organizer: {
+      type: String,
+      required: true
+    },
+    place: {
+      type: String,
+      required: true
+    },
+    date: {
+      type: Date,
       required: true
     }
   },
@@ -25,12 +33,12 @@ export const MeetupInfo = {
   // computed
   computed: {
     meetupInfo() {
-      let date = new Date(this.meetup.date).toLocaleString(navigator.language, {
+      let date = new Date(this.date).toLocaleString(navigator.language, {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
       });
-      let ISODate = new Date(this.meetup.date).toISOString().substring(0, 10);
+      let ISODate = new Date(this.date).toISOString().substring(0, 10);
       return {
         date,
         ISODate
