@@ -15,22 +15,22 @@ export const MeetupsCalendar = {
         </div>
       </div>
       <div class="rangepicker__date-grid">
-        <template v-for="pastDay in this.fillInactiveDays()">
+        <template v-for="pastDay in calendarData.pastDaysMeetap">
           <div class="rangepicker__cell rangepicker__cell_inactive">
-            {{ pastDay }}
-            <a v-for="title in getMeetupsAtDay(\`\${pastDay}\`, dateInfo.currentMonth, 'past')" class="rangepicker__event">{{ title }}</a>
-          </div>
+            {{ pastDay.num }}
+            <a v-for="title in pastDay.meetupArr" class="rangepicker__event">{{ title }}</a>
+            </div>
         </template>
-        <template v-for="day in dateInfo.daysInCurrentMonth">
+        <template v-for="day in calendarData.daysMeetap">
           <div class="rangepicker__cell">
-          {{ day }}
-          <a v-for="title in getMeetupsAtDay(\`\${day}\`, dateInfo.currentMonth)" class="rangepicker__event">{{ title }}</a>
+          {{ day.num }}
+          <a v-for="title in day.meetupArr" class="rangepicker__event">{{ title }}</a>
           </div>
         </template>
-        <template v-for="pastDay in this.fillFutureInactiveDays()">
+        <template v-for="futureDay in calendarData.futureDaysMeetap">
           <div class="rangepicker__cell rangepicker__cell_inactive">
-            {{ pastDay }}
-            <a v-for="title in getMeetupsAtDay(\`\${pastDay}\`, dateInfo.currentMonth, 'past')" class="rangepicker__event">{{ title }}</a>
+            {{ futureDay.num }}
+            <a v-for="title in futureDay.meetupArr" class="rangepicker__event">{{ title }}</a>
           </div>
         </template>
       </div>
@@ -72,8 +72,17 @@ export const MeetupsCalendar = {
         currentYear,
         firstDay,
         daysInCurrentMonth,
-        daysInCurrentMonth,
-        lastDay
+        lastDay,
+      }
+    },
+    calendarData() {
+      let pastDaysMeetap = this.getDaysMeetapsData("past");
+      let daysMeetap = this.getDaysMeetapsData();
+      let futureDaysMeetap = this.getDaysMeetapsData("future");
+      return {
+        pastDaysMeetap,
+        daysMeetap,
+        futureDaysMeetap
       }
     }    
   },
@@ -90,8 +99,8 @@ export const MeetupsCalendar = {
       }
       for(let i = pastMonthDaysNum - 1; i >= 0; i--) {
         let dayNum = (-1) * i;
-        let monthNum = new Date(this.dateInfo.currentYear, this.dateInfo.currentMonth, dayNum).getDate();
-        pastMonthDaysArr.push(monthNum);
+        let pastDayNum = new Date(this.dateInfo.currentYear, this.dateInfo.currentMonth, dayNum).getDate();
+        pastMonthDaysArr.push(pastDayNum);
       }
       return pastMonthDaysArr;
     },
@@ -105,8 +114,8 @@ export const MeetupsCalendar = {
       }
       for(let i = 1; i <= futureMonthDaysNum; i++) {
         let dayNum = i;
-        let monthNum = new Date(this.dateInfo.currentYear, this.dateInfo.currentMonth, dayNum).getDate();
-        futureMonthDaysArr.push(monthNum);
+        let futureDayNum = new Date(this.dateInfo.currentYear, this.dateInfo.currentMonth, dayNum).getDate();
+        futureMonthDaysArr.push(futureDayNum);
       }
       return futureMonthDaysArr;
     },
@@ -124,18 +133,19 @@ export const MeetupsCalendar = {
         this.today = new Date(this.dateInfo.currentYear, this.dateInfo.currentMonth - 1);
       }
     },
-    getMeetupsAtDay(dayNum, monthNum, flag = "") {
+
+    getMeetupsAtDay(dayNum, flag = "") {
       let localMonth = this.dateInfo.currentMonth;
       let localYear = this.dateInfo.currentYear;
       if (flag === "past") {
-        if (monthNum === 0) {
+        if (localMonth === 0) {
           localMonth = 11;
           localYear--; 
         } else {
           localMonth--;
         }
       } else if (flag === "future") {
-        if (monthNum === 11) {
+        if (localMonth === 11) {
           localMonth = 0;
           localYear++; 
         } else {
@@ -158,6 +168,26 @@ export const MeetupsCalendar = {
         }
       });
       return result;        
+    },
+
+    getDaysMeetapsData(key = "") {
+      let result = [];
+      let arrDays = [];
+      if (key === "past") {
+        arrDays = this.fillInactiveDays();
+      } else if (key === "future") {
+        arrDays = this.fillFutureInactiveDays();
+      } else {
+        for (let index = 1; index <= this.dateInfo.daysInCurrentMonth; index++) {
+          arrDays.push(index);
+        }
+      }
+      arrDays.forEach(day => {
+        let dayMeetups = this.getMeetupsAtDay(day, key);
+        result.push( {"meetupArr": dayMeetups,
+                      "num": day} )  
+      }); 
+      return result;  
     },
   }
 };
