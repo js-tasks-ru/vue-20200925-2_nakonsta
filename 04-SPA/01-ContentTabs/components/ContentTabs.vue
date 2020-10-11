@@ -13,7 +13,9 @@
     </div>
     <div class="content-tabs__content">
       <!-- Не понимаю, как правильно прокинуть prop на PageA и PageB, если это нельзя сделать через пропсы -->
-      <router-view :prop="this.$parent.prop"/>
+      <slot>
+        <router-view />
+      </slot>
     </div>
   </div>
 </template>
